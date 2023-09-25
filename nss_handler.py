@@ -1,3 +1,4 @@
+import json
 from enum import Enum
 from urllib.parse import urlparse, parse_qs
 from http.server import BaseHTTPRequestHandler
@@ -15,8 +16,25 @@ class status(Enum):
 class HandleRequests(BaseHTTPRequestHandler):
 
     def response(self, body, code):
+        """Send HTTP response with body and status code
+
+        Args:
+            body (any): Data to send in response
+            code (int): HTTP response code
+        """
         self.set_response_code(code)
         self.wfile.write(body.encode())
+
+    def get_request_body(self):
+        """Extract body from HTTP request
+
+        Returns:
+            string: JSON serialized request body
+        """
+        content_len = int(self.headers.get('content-length', 0))
+        request_body = self.rfile.read(content_len)
+        request_body = json.loads(request_body)
+        return request_body
 
     def parse_url(self, path):
         """Parse the url into the resource and id"""

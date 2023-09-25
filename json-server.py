@@ -22,12 +22,8 @@ class JSONServer(HandleRequests):
         url = self.parse_url(self.path)
         view = self.determine_view(url)
 
-        content_len = int(self.headers.get('content-length', 0))
-        request_body = self.rfile.read(content_len)
-        request_body = json.loads(request_body)
-
         try:
-            view.update(self, request_body, url["pk"])
+            view.update(self, self.get_request_body(), url["pk"])
         except AttributeError:
             return self.response("No view for that route", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
 
@@ -53,6 +49,13 @@ class JSONServer(HandleRequests):
             view.delete(self, url["pk"])
         except AttributeError:
             return self.response("No view for that route", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
+
+
+
+
+
+
+
 
 
 
